@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
@@ -14,11 +14,48 @@
          height: 500px;
          border: 3px solid purple; 
          position: absolute;
-         left: 50%;
+         left: 25%;
          top: 50%;
          transform: translate(-50%, -50%);
       }
-      
+
+      .container-empty {
+         width: 500px; /* Mitad del tamaño del contenedor original */
+         height: 250px;
+         border: 3px solid purple; /* Mismo color que el original */
+         position: absolute;
+         left: 75%; /* Ubicado a la derecha */
+         top: 31%;
+         transform: translate(-50%, -50%);
+      }
+
+      /* Nuevo cuadro con el enlace */
+      .link-container {
+         width: 500px;
+         height: 250px;
+         border: 3px solid purple;
+         position: absolute;
+         left: 75%;
+         top: 73%; /* Ajustado para colocarlo debajo del reproductor */
+         transform: translate(-50%, -50%);
+         background-color: #550455; /* Color morado claro */
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         animation: bailar 2s infinite;
+      }
+
+      .link-container a {
+         color: white;
+         font-size: 20px;
+         text-decoration: none;
+      }
+
+      @keyframes bailar {
+         0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+         50% { transform: translate(-50%, -50%) translateY(-10px); }
+      }
+
       .titulo {
          position: absolute;
          top: 10px;
@@ -30,7 +67,7 @@
          white-space: nowrap;
          animation: none;
       }
-      
+
       p {
          color: red;
          box-shadow: -10px 15px 100px red;
@@ -301,6 +338,81 @@
          80% {transform: scale(2.);}
       }
 
+      /* Estilos para el reproductor de música */
+      .player {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          color: white;
+          font-family: Arial, sans-serif;
+      }
+
+      .controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 20px 0;
+      }
+
+      .controls button {
+          background-color: #7f3fbf; /* Color púrpura armonioso */
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          margin: 0 10px;
+          font-size: 20px;
+          border-radius: 50%; /* Botones circulares */
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s;
+          width: 50px;
+          height: 50px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+
+      .controls button:hover {
+          background-color: #a15fcc; /* Color púrpura más claro al pasar el cursor */
+          transform: scale(1.1); /* Efecto de aumento al pasar el cursor */
+      }
+
+      .playlist {
+          width: 100%;
+          max-height: 150px;
+          overflow-y: auto;
+          margin-top: 10px;
+      }
+
+      .playlist ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          width: 100%;
+      }
+
+      .playlist li {
+          padding: 8px;
+          border-bottom: 1px solid #444;
+          cursor: pointer;
+          transition: background-color 0.3s;
+          color: #ddd;
+      }
+
+      .playlist li:hover, .playlist li.active {
+          background-color: rgba(255, 255, 255, 0.1);
+          color: white;
+      }
+
+      /* Estilos adicionales para mejorar la apariencia */
+      .player audio {
+          width: 100%;
+          outline: none;
+          margin-bottom: 10px;
+      }
+
    </style>
 </head>
 <body>
@@ -308,9 +420,6 @@
 <div class="container">
    <!-- Título de Feliz Cumpleaños -->
    <p class="titulo">Feliz cumpleaños mi amor!!</p>
-
-   <!-- Corazón -->
-   <!-- Eliminé la clase "heart" y su animación -->
 
       <!-- Lado derecho -->
       <p class="segunda">AMO</p>
@@ -368,5 +477,111 @@
 
 </div>
 
+<div class="container-empty">
+   <div class="player">
+       <audio id="audio-player" src="" preload="metadata"></audio>
+       <div class="controls">
+           <button id="prev-btn" title="Anterior">⏮️</button>
+           <button id="play-pause-btn" title="Reproducir/Pausar">▶️</button>
+           <button id="next-btn" title="Siguiente">⏭️</button>
+       </div>
+       <div class="playlist">
+           <ul id="playlist">
+               <!-- Plantillas de canciones -->
+               <li data-src="Until.mp3">Until I found you - Cuando te empecé a conocer</li>
+               <li data-src="NoTienesRemedio.mp3">Amor mío - Lo que siento por ti</li>
+               <li data-src="LoversRock.mp3">Lovers Rock - Cuando hablo contigo</li>
+               <!-- Agrega más canciones aquí -->
+           </ul>
+       </div>
+   </div>
+</div>
+
+<!-- Nuevo cuadro con el enlace -->
+<div class="link-container">
+    <a href="https://gifft.me/es/o/d/vpaddvt0bihde3eqak8ww0ir" target="_blank">Haz click aqui mi princesita ♡ </a>
+</div>
+
+<script>
+   // Obtener elementos del DOM
+   const audioPlayer = document.getElementById('audio-player');
+   const playPauseBtn = document.getElementById('play-pause-btn');
+   const nextBtn = document.getElementById('next-btn');
+   const prevBtn = document.getElementById('prev-btn');
+   const playlist = document.getElementById('playlist');
+   const songs = playlist.getElementsByTagName('li');
+
+   let currentSongIndex = 0;
+   let isPlaying = false;
+
+   // Función para cargar una canción
+   function loadSong(index) {
+       const song = songs[index];
+       audioPlayer.src = song.getAttribute('data-src');
+       updateActiveSong();
+   }
+
+   // Función para actualizar la clase activa en la lista
+   function updateActiveSong() {
+       for (let i = 0; i < songs.length; i++) {
+           songs[i].classList.remove('active');
+       }
+       songs[currentSongIndex].classList.add('active');
+   }
+
+   // Función para reproducir/pausar
+   function playPause() {
+       if (isPlaying) {
+           audioPlayer.pause();
+           playPauseBtn.textContent = '▶️';
+       } else {
+           audioPlayer.play();
+           playPauseBtn.textContent = '⏸️';
+       }
+       isPlaying = !isPlaying;
+   }
+
+   // Función para reproducir la siguiente canción
+   function nextSong() {
+       currentSongIndex = (currentSongIndex + 1) % songs.length;
+       loadSong(currentSongIndex);
+       if (isPlaying) {
+           audioPlayer.play();
+       }
+   }
+
+   // Función para reproducir la canción anterior
+   function prevSong() {
+       currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+       loadSong(currentSongIndex);
+       if (isPlaying) {
+           audioPlayer.play();
+       }
+   }
+
+   // Eventos de botones
+   playPauseBtn.addEventListener('click', playPause);
+   nextBtn.addEventListener('click', nextSong);
+   prevBtn.addEventListener('click', prevSong);
+
+   // Evento cuando la canción termina
+   audioPlayer.addEventListener('ended', nextSong);
+
+   // Evento al hacer clic en una canción de la lista
+   for (let i = 0; i < songs.length; i++) {
+       songs[i].addEventListener('click', function() {
+           currentSongIndex = i;
+           loadSong(currentSongIndex);
+           audioPlayer.play();
+           isPlaying = true;
+           playPauseBtn.textContent = '⏸️';
+       });
+   }
+
+   // Cargar la primera canción al iniciar
+   loadSong(currentSongIndex);
+</script>
+
 </body>
 </html>
+
